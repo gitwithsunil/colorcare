@@ -2,7 +2,7 @@
 
 Follow these steps in order. **One PowerShell terminal is enough** to install and run the app. Keep it open while using ColorCare.
 
-## 1. Install Python and Git
+## 1. Install Python and Git(for WHO do not have GIT )
 
 Install Python 3.11 or newer from [python.org](https://www.python.org/downloads/) and Git from [git-scm.com](https://git-scm.com/download/win). During Python setup, select **Add Python to PATH**.
 
