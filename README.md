@@ -51,11 +51,14 @@ Wait for Flask to show that it is running, then open [http://127.0.0.1:5000](htt
 
 You do not need a second terminal to run the app. Open another PowerShell window only if you want to run commands separately, such as the tests.
 
-## 6. Try the features
+## 6. Use the five navigation sections
 
-1. On the Home page, choose **Open Scanner** and allow camera access to sample a color from your webcam.
-2. Choose **Upload Image** to inspect a JPG, PNG, or WEBP photo, sample a pixel, or extract its palette.
-3. Open **AI Assistant** to ask questions if Gemini is configured and available.
-4. Open **Vision Test** to try the educational activity. It is not a medical diagnosis.
+Use the top navigation bar to move between **Home**, **Live Scanner**, **Image Explorer**, **AI Assistant**, and **Vision Test**.
+
+1. **Home:** overview and shortcuts to the app's tools.
+2. **Live Scanner:** allow camera access, then click the video to sample a color from your webcam.
+3. **Image Explorer:** upload a JPG, PNG, or WEBP photo to sample a pixel or extract its palette.
+4. **AI Assistant:** ask questions if Gemini is configured and available.
+5. **Vision Test:** try the educational activity. It is not a medical diagnosis.
 
 The webcam works at the local address above. A public deployment needs HTTPS for browser camera access.
