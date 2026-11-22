@@ -1,23 +1,23 @@
-# Run ColorCare AI on your PC
+# Run ColorCare AI on your Windows PC
 
-## 1. Install Python
+Follow these steps in order. **One PowerShell terminal is enough** to install and run the app. Keep it open while using ColorCare.
 
-Install Python 3.11 or newer from [python.org](https://www.python.org/downloads/). On Windows, select **Add Python to PATH** during installation.
+## 1. Install Python and Git
 
-## 2. Get the project
+Install Python 3.11 or newer from [python.org](https://www.python.org/downloads/) and Git from [git-scm.com](https://git-scm.com/download/win). During Python setup, select **Add Python to PATH**.
 
-Clone the project repository (replace the placeholder with its Git URL):
+## 2. Clone the project
+
+Open PowerShell and run:
 
 ```powershell
-git clone <repository-url>
-cd CC
+git clone https://github.com/gitwithsunil/colorcare.git
+cd colorcare
 ```
 
-Or download the repository as a ZIP, extract it, then open PowerShell in the extracted project folder.
+## 3. Create a virtual environment and install packages
 
-## 3. Install the app's packages
-
-Run these commands in the project folder:
+Run these commands in the same PowerShell window:
 
 ```powershell
 py -m venv .venv
@@ -26,32 +26,36 @@ python -m pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
-If PowerShell does not allow environment activation, use `.venv\Scripts\python.exe -m pip install -r requirements.txt` to install packages, and run the app with `.venv\Scripts\python.exe app.py`.
+If PowerShell blocks activation, run `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned` once, reopen PowerShell, and activate again. Alternatively, skip activation and use `.venv\Scripts\python.exe` in place of `python` for the remaining commands.
 
-## 4. Set up AI (optional)
+## 4. Configure Gemini AI (optional)
 
-Color sampling, image pixel sampling, and palette extraction work without an AI key. To enable Gemini chat and image descriptions, copy the example settings file and add your own key:
+Color scanning and image color tools work without Gemini. To enable AI chat and image descriptions, create a local settings file:
 
 ```powershell
 Copy-Item .env.example .env
 notepad .env
 ```
 
-In `.env`, set `GEMINI_API_KEY` to your key. Keep this file private and do not upload it to a public repository. Restart ColorCare after changing the key.
+In Notepad, set `GEMINI_API_KEY` to your own Google AI Studio key, save, and close the file. Keep your key private; do not post it to GitHub. If you skip this step, the local color tools will still work.
 
-## 5. Start ColorCare
+## 5. Run the app
+
+In that same PowerShell window, run:
 
 ```powershell
 python app.py
 ```
 
-Keep the PowerShell window open. In your browser, visit [http://127.0.0.1:5000](http://127.0.0.1:5000). Press **Ctrl+C** in PowerShell when you want to stop the app.
+Wait for Flask to show that it is running, then open [http://127.0.0.1:5000](http://127.0.0.1:5000) in your browser. **Do not close the PowerShell window** while using the app. Press **Ctrl+C** in it to stop ColorCare.
 
-## 6. Use the app
+You do not need a second terminal to run the app. Open another PowerShell window only if you want to run commands separately, such as the tests.
 
-- Choose **Open Scanner** and allow camera access to sample colors from your webcam.
-- Choose **Upload Image** to inspect a photo, sample a pixel, or extract its palette.
-- Open **AI Assistant** to ask color questions if Gemini is configured and available.
-- Use **Vision Test** for the educational color vision activity; it is not a medical diagnosis.
+## 6. Try the features
 
-The webcam works on this local address. A deployed website needs HTTPS for browser camera access.
+1. On the Home page, choose **Open Scanner** and allow camera access to sample a color from your webcam.
+2. Choose **Upload Image** to inspect a JPG, PNG, or WEBP photo, sample a pixel, or extract its palette.
+3. Open **AI Assistant** to ask questions if Gemini is configured and available.
+4. Open **Vision Test** to try the educational activity. It is not a medical diagnosis.
+
+The webcam works at the local address above. A public deployment needs HTTPS for browser camera access.
