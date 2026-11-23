@@ -1,0 +1,473 @@
+COLORCARE AI — PROJECT EXPLANATION GUIDE
+========================================
+
+Purpose of this file
+--------------------
+This guide explains what ColorCare AI does, why it was made, who may use it,
+how its main features work, what happens to images and messages, and how to
+describe the project clearly to a teacher, evaluator, teammate, or new user.
+It follows the current application code in this repository. It is written so a
+team member can learn the project and explain it without needing to memorize
+technical terms.
+
+QUICK PROJECT SUMMARY
+---------------------
+ColorCare AI is a web application that helps a person inspect colors in a live
+camera view or an uploaded photograph. It shows a color name estimate and its
+HEX, RGB, and HSL values. It can extract a small palette from a photo, read color
+information aloud, copy a HEX value, and optionally ask Google's Gemini AI about
+a color, scene, or attached image. It also contains a short educational color
+vision activity.
+
+The core color sampling and conversion features run locally in the user's
+browser. Flask and Pillow process a photo when the user asks for a palette.
+Gemini is an optional online service. ColorCare does not train or run a local
+machine-learning model, and the vision activity is not a medical test.
+
+1. THE PROBLEM AND WHY THE PROJECT EXISTS
+-----------------------------------------
+Color is often used to communicate information. A chart may use red and green
+to show different results. A warning light may depend on its color. A user may
+need to compare similar shades in a photo or find a particular color in their
+surroundings. When colors are difficult for someone to distinguish, or when
+lighting and displays make shades unclear, these tasks can take extra effort.
+
+ColorCare gives users another way to inspect a color: it can report a name
+estimate and numeric color values. The numbers and spoken output provide cues
+besides looking at the color patch alone. The project is intended as a helpful
+color-information tool, not a replacement for accessible design. Important
+information should still use labels, shapes, patterns, or text in addition to
+color.
+
+Why this solution is useful:
+  * It makes a selected color's values visible in a consistent format.
+  * It can inspect a point in a camera frame or a photograph.
+  * A palette gives a quick overview of the major colors in a photo.
+  * Copy and speech controls make the result easier to reuse or hear.
+  * Optional AI can describe visible objects or answer general color questions.
+  * An educational activity introduces the idea that people may perceive colors
+    differently, while clearly saying that it cannot diagnose anyone.
+
+2. WHO MAY FIND IT USEFUL?
+-------------------------
+ColorCare is designed for:
+  * People who have difficulty distinguishing some colors and want an extra
+    color label or numeric cue.
+  * People with low vision or who prefer information read aloud. The browser's
+    built-in speech feature can speak a sampled color when available.
+  * Students and educators learning about color values and color vision.
+  * Anyone comparing colors in a real scene or a photo.
+  * Developers and designers who want to inspect a color sample quickly.
+
+The app does not determine that a user has any of these conditions. It is also
+not a clinical tool and should not be used to make health, safety, or medical
+decisions.
+
+3. COLOR VISION: EASY EXPLANATION AND MAIN TYPES
+------------------------------------------------
+The retina at the back of the eye has light-sensitive cells called cones that
+help people see color. Different color vision deficiencies affect how some
+colors are perceived or separated. “Color blindness” is a familiar phrase, but
+many people with color vision deficiency do see color; some combinations are
+simply harder to tell apart. Experiences vary between individuals.
+
+Common categories include:
+
+RED–GREEN DEFICIENCIES
+  * Deuteranomaly: green-sensitive vision is altered. Some shades of green can
+    look more red. It is a common, often mild form.
+  * Protanomaly: red-sensitive vision is altered. Some reds can look greener or
+    less bright.
+  * Deuteranopia: a stronger green-related deficiency; some reds and greens can
+    be difficult to distinguish.
+  * Protanopia: a stronger red-related deficiency; some reds and greens can be
+    difficult to distinguish, and red may look less bright.
+
+BLUE–YELLOW DEFICIENCIES
+  * Tritanomaly: blue-yellow color vision is altered. Some blues and greens, and
+    some yellows and reds, can be difficult to distinguish.
+  * Tritanopia: a stronger blue-yellow deficiency. Certain blue/green,
+    purple/red, and yellow/pink combinations may be hard to tell apart.
+
+COMPLETE COLOR VISION DEFICIENCY
+  * Monochromacy/achromatopsia is rare and involves very limited or absent color
+    vision. Depending on the condition, vision sharpness or light sensitivity
+    may also be affected.
+
+These descriptions are simple examples, not a way to identify someone's type.
+Some deficiencies are inherited, while color vision can also change because of
+an eye or brain condition, injury, medication, or aging. If someone is concerned
+about their color vision, an eye-care professional can perform an appropriate
+assessment. A display-based activity cannot replace that examination.
+
+4. PROJECT OBJECTIVES AND SCOPE
+-------------------------------
+The current project aims to:
+  1. Sample a color from a live camera view.
+  2. Sample the exact selected pixel from an uploaded image.
+  3. Display the sample as a color patch, an approximate name, HEX, RGB, and HSL.
+  4. Extract up to six prominent colors from a photo.
+  5. Let the user copy a HEX value or hear a color description with browser
+     speech synthesis when the browser supports it.
+  6. Offer optional Gemini chat and image description when a valid key, network
+     access, model access, and available quota are present.
+  7. Provide an educational activity with different randomly selected questions.
+  8. Offer accessibility preferences such as larger text, high contrast, and
+     reduced motion.
+
+The project does not train a classifier to detect color blindness, identify a
+medical condition, or guarantee that a person will perceive a color in a
+particular way.
+
+5. THE FIVE PARTS OF THE WEBSITE
+--------------------------------
+HOME
+  The landing page introduces ColorCare and provides shortcuts to its tools.
+
+LIVE SCANNER
+  The user allows camera access, then clicks on the camera image or uses the
+  center-scan control. The app samples a small neighborhood around the point to
+  reduce noise from a single camera pixel. The page can also select a camera,
+  capture/pause a frame, show recent samples, copy HEX, and speak a result.
+
+IMAGE EXPLORER
+  The user selects or drops a JPG, PNG, or WEBP file. Clicking the displayed
+  photo reads the corresponding exact image pixel in the browser. The user can
+  request a palette of up to six prominent colors. An optional separate button
+  sends the image for a Gemini description if Gemini is configured.
+
+AI ASSISTANT
+  The user can ask about colors, objects, or a scene, optionally attaching a
+  photo. The browser sends the question and recent chat context to Flask, which
+  calls Gemini. Responses are streamed to the page as text arrives. The AI can
+  make mistakes; it is not a medical adviser.
+
+VISION TEST / EDUCATIONAL ACTIVITY
+  The activity selects six questions at random from a pool of 30 generated
+  number, letter, and shape patterns. It gives a reflection-oriented summary.
+  The patterns are not validated clinical color plates, the score is not a
+  diagnosis, and screen brightness/settings can change what a user sees.
+
+6. HOW A USER COMPLETES THE MAIN WORKFLOW
+-----------------------------------------
+  1. Open ColorCare in a browser.
+  2. Choose Live Scanner or Image Explorer.
+  3. For the scanner, allow camera permission. For Image Explorer, choose or
+     drop a supported photo.
+  4. Click a point, or ask the scanner to sample the center.
+  5. Read the name estimate and HEX, RGB, and HSL values.
+  6. Optionally copy the HEX value or use Speak color.
+  7. In Image Explorer, optionally extract a palette. In AI Assistant, optionally
+     ask Gemini a question or request an image description.
+
+Short presentation line: “Choose a tool, sample a color, read its values, then
+copy or hear the result. AI is an optional extra.”
+
+7. HOW THE COLOR CALCULATION WORKS
+----------------------------------
+RGB
+  RGB means Red, Green, Blue. The app represents each channel with an integer
+  from 0 to 255. For example, RGB (84, 136, 216) means red=84, green=136, and
+  blue=216.
+
+HEX
+  HEX is the same three RGB channel values written in base 16, two digits per
+  channel. RGB (84, 136, 216) becomes #5488D8. The # is a standard web color
+  notation marker. HEX and RGB describe the same sample, not two separate
+  measurements.
+
+HSL
+  HSL means Hue, Saturation, and Lightness. Hue is an angle from 0 to 360
+  degrees around a color wheel. Saturation is shown as a percentage from 0 to
+  100, and lightness is also shown as a percentage from 0 to 100. HSL is another
+  mathematical description of the same RGB sample.
+
+LIVE CAMERA SAMPLE
+  The browser draws the current video frame to a hidden canvas and reads a 9 by
+  9 pixel area around the chosen point. It averages the red, green, and blue
+  channels separately, then calculates the displayed formats. So a camera
+  sample is a small-area average, not a laboratory measurement of a surface.
+
+UPLOADED PHOTO SAMPLE
+  The browser maps the click position on the displayed photo back to the source
+  image and reads the selected pixel. That selected-pixel sample is handled in
+  the browser. It can differ from what the object looks like because of camera
+  exposure, shadows, compression, reflections, and display settings.
+
+COLOR NAME
+  A color name is an estimate. The browser uses hue/saturation/lightness ranges
+  to assign one of its familiar labels. Python's palette service estimates
+  names by comparing colors in CIELAB space against a small built-in set of
+  reference colors. Since those are two different simple methods, a borderline
+  color name can vary between a sampled point and a palette item. Numeric color
+  values are more precise than everyday labels, but they still describe the
+  digital sample and not a person's visual experience.
+
+PALETTE
+  When asked to create a palette, the browser uploads the photo to Flask. Pillow
+  reduces it to a smaller working image and groups pixels into up to six color
+  clusters. The returned items are sorted by how much of the reduced image they
+  represent. Percentages are approximate summaries, not exact object-area
+  measurements.
+
+8. SYSTEM ARCHITECTURE AND DATA FLOW
+------------------------------------
+
+  USER / WEB BROWSER
+       |-- Live video -> browser canvas -> sample and calculate color locally
+       |-- Photo click -> browser reads the selected pixel locally
+       |-- Accessibility and speech -> browser APIs, if supported
+       |
+       |-- Photo + palette request -------------------------> Flask server
+       |                                                     -> Pillow palette
+       |                                                     <- palette result
+       |
+       |-- Chat prompt / optional image --------------------> Flask server
+                                                             -> Gemini API at Google
+                                                             <- streamed AI text
+
+In plain terms:
+  * Camera sampling and clicking a single pixel in a photo do not require
+    Gemini and are calculated in the browser.
+  * Palette extraction is done by the Python server using Pillow.
+  * Gemini chat and AI image description are external online services. They are
+    only used when the user selects those AI features.
+  * Flask keeps the Gemini key on the server side; it is not intended to be
+    embedded in browser JavaScript.
+
+9. TECHNOLOGY USED
+------------------
+  * HTML: page structure and controls.
+  * CSS: layout, Color Bento visual style, responsive behavior, and accessibility
+    presentation.
+  * JavaScript: navigation, camera access, pixel sampling, color conversions,
+    image preview, clipboard, speech, chat streaming, and activity behavior.
+  * Python and Flask: local web server and API endpoints.
+  * Pillow: image loading, resizing for palette analysis, and color grouping.
+  * Google Gen AI SDK / Gemini API: optional text and image assistance.
+  * Browser APIs: getUserMedia for webcam access, Canvas for pixel reads,
+    Clipboard API for copying, Speech Synthesis for voice, and localStorage for
+    recent sampled colors and accessibility preferences.
+
+There is no locally trained machine-learning model in this project. Pillow's
+palette grouping is an image-processing/quantization technique. HEX/RGB/HSL
+conversion is deterministic math. Gemini is a hosted generative AI service, not
+a model trained as part of this project.
+
+10. AI: WHAT IT DOES AND WHAT IT DOES NOT DO
+--------------------------------------------
+Gemini is optional. When configured, the AI Assistant sends a user prompt, a
+small recent chat history, and (if attached) an image to Google's Gemini API.
+The application asks the model to answer briefly, clearly, and without medical
+diagnosis. AI responses may be wrong, incomplete, or unavailable.
+
+AI availability depends on a valid API key, the selected model being accessible
+to that key, internet access, and the project's current rate limits/quota. If
+AI is unavailable or not configured, the chat endpoint reports that clearly;
+camera sampling, pixel sampling, color calculations, and local palette features
+remain separate from Gemini. There is no offline generative chatbot fallback.
+
+When explaining “AI and ML,” use this accurate wording:
+  “ColorCare has no locally trained ML classifier. Its sampling and color
+   conversion use browser image access and math. Palette extraction uses Pillow's
+   image quantization. Optional Gemini is a hosted generative AI assistant.”
+
+11. PRIVACY AND SECURITY
+------------------------
+  * The webcam is accessed only after the user presses the camera control and
+    grants browser permission. The app samples frames in the browser; it does
+    not send webcam video to Gemini as part of scanner sampling.
+  * A clicked photo pixel is read in the browser. Asking for a palette sends the
+    selected photo to the Flask server for processing.
+  * The current Flask code processes palette uploads in memory and does not
+    save them as application files. The project has an uploads folder for
+    repository structure, but the palette route does not write the upload there.
+  * Selecting “Describe with AI” sends the photo through the Flask server to
+    Google Gemini. Attaching an image in AI Assistant also sends it to Gemini.
+    Do not send sensitive/private photos unless you are comfortable sharing them
+    with the external AI provider under its applicable terms and settings.
+  * The chat text is sent to Gemini when using AI Assistant. The app keeps the
+    recent chat in browser memory for the current page session; the code shown
+    does not save chat transcripts to localStorage.
+  * Recent color samples and accessibility preferences are stored in the
+    browser's localStorage on that device. The Clear control removes the recent
+    sample list.
+  * Keep GEMINI_API_KEY in the local .env file or server environment. Never
+    paste a real key into HTML/JavaScript, screenshots, public documents, or a
+    public Git repository. Keep .env private and rotate a key if it is exposed.
+
+“The app does not save uploads” describes the application code's upload route.
+It does not make claims about browser caches, server hosting logs, backups, or
+Google's processing and retention rules. A deployed service must explain its
+hosting and provider policies separately.
+
+12. ACCESSIBILITY AND USER CONTROLS
+-----------------------------------
+  * Larger text preference.
+  * High-contrast preference.
+  * Reduced-motion preference.
+  * Optional voice preference and Speak color controls.
+  * HEX copy buttons with a visible confirmation.
+  * Text labels and numeric values accompany color patches.
+  * Recent camera samples can be revisited or cleared.
+  * The app stops the camera stream when navigating away from Live Scanner.
+
+These features are useful supports, but they do not by themselves prove full
+accessibility compliance. Browser speech voices, clipboard permission, camera
+devices, and camera permissions vary across devices and browsers.
+
+13. LIMITATIONS TO EXPLAIN HONESTLY
+----------------------------------
+  1. Color names are approximate and the name list is limited.
+  2. Lighting, shadows, camera quality, white balance, compression, and screens
+     can change the digital sample.
+  3. A sampled color cannot tell how that color appears to a particular person.
+  4. The pseudo-dot educational activity is generated for reflection, not a
+     validated Ishihara or clinical screening test. Its score cannot diagnose a
+     deficiency.
+  5. Gemini needs internet access and working API access/quota. Its replies can
+     be wrong, delayed, or unavailable. Gemini is not required for local color
+     sampling and conversions.
+  6. ColorCare does not provide medical advice or recommend treatment.
+  7. A production deployment needs appropriate HTTPS, secret management,
+     privacy disclosures, and operational monitoring. Browsers generally
+     require HTTPS (or localhost) for webcam access.
+
+14. HOW TO RUN IT ON A NEW WINDOWS PC
+------------------------------------
+Use one PowerShell terminal for setup and for running the application. You do
+not need two terminals just to use the site.
+
+STEP 1 — Install prerequisites
+  Install Python 3.11 or newer and Git. During Python setup, enable “Add Python
+  to PATH.”
+
+STEP 2 — Clone the public repository
+  Open PowerShell and run:
+
+      git clone https://github.com/gitwithsunil/colorcare.git
+      cd colorcare
+
+STEP 3 — Create and activate a virtual environment
+  In the same PowerShell window run:
+
+      py -m venv .venv
+      .venv\Scripts\Activate.ps1
+      python -m pip install --upgrade pip
+      pip install -r requirements.txt
+
+  If PowerShell blocks activation, the user may allow scripts for their account
+  with the appropriate Windows policy or run .venv\Scripts\python.exe directly.
+
+STEP 4 — Configure optional Gemini AI
+  Local color tools work even if this step is skipped. To configure Gemini:
+
+      Copy-Item .env.example .env
+      notepad .env
+
+  Add the user's own Gemini API key to GEMINI_API_KEY, save .env, and keep it
+  private. GEMINI_MODEL can be set to a model available to that account. Never
+  use another person's API key without permission.
+
+STEP 5 — Start the Flask application
+  In that same terminal run:
+
+      python app.py
+
+  Keep the terminal open. In a browser visit:
+
+      http://127.0.0.1:5000
+
+  Stop the app with Ctrl+C in the same terminal. The default server is bound to
+  the local computer. Webcam access on a deployed/public site requires HTTPS.
+
+STEP 6 — Optional tests
+  Open a second PowerShell window only if you want to run tests separately,
+  leaving the server terminal running. From the project folder, activate the
+  environment and run:
+
+      .venv\Scripts\Activate.ps1
+      python -m unittest discover -s tests -v
+
+  Test files cover color calculations, Flask routes and validation, AI service
+  behavior, frontend behavior/contracts, and important error handling. A test
+  passing does not guarantee that every camera or speech device works on every
+  computer; those capabilities depend on the user's hardware, browser, and
+  permissions.
+
+15. KEY PROJECT FILES
+---------------------
+  app.py
+    Starts Flask and defines the home page and API routes. It validates image
+    uploads, serves the AI availability status, runs palette analysis, and
+    streams AI chat replies.
+
+  templates/index.html
+    Defines the five app views, controls, labels, accessibility panel, and
+    educational activity container.
+
+  static/css/style.css
+    Main Color Bento layout, colors, and responsive interface styling.
+
+  static/css/accessibility.css
+    Accessibility-related visual preferences and styles.
+
+  static/js/app.js
+    Browser interactions: navigation, camera, pixel reads, color calculations,
+    copy, voice, photo handling, chat, and randomized activity questions.
+
+  services/color_engine.py
+    Python RGB/HEX/HSL/HSV conversions, RGB averaging, color-distance matching,
+    and palette color-name estimates.
+
+  services/image_service.py
+    Pillow palette extraction and image conversion for AI requests.
+
+  services/ai_service.py
+    Optional Gemini connection, prompt creation, image preparation, streaming,
+    timeout handling, and safe error responses.
+
+  tests/
+    Automated checks for calculations, HTTP routes, AI behavior, and frontend
+    requirements.
+
+  requirements.txt
+    Python packages needed to run the application.
+
+  .env.example
+    Example names/settings for environment variables. Put real secrets in a
+    local .env file and do not commit that file.
+
+16. USEFUL WORDS
+----------------
+  API: A defined way for one program to request a service from another program.
+  Browser: The application used to open and interact with the website.
+  Canvas: A browser drawing surface that can expose image pixel values.
+  Flask: A Python framework used here to serve the website and API routes.
+  Gemini: Google's hosted generative AI service used optionally by ColorCare.
+  HEX: A base-16 notation for RGB values, such as #5488D8.
+  HSL: Hue, Saturation, and Lightness; another way to represent a color.
+  Image quantization: Grouping many image colors into fewer representative
+    colors, used here to make a compact palette.
+  ML (machine learning): A method where a model learns patterns from data. This
+    project does not train a local ML model.
+  Pillow: A Python library for opening and processing images.
+  RGB: Red, Green, and Blue channel values, each normally between 0 and 255.
+  Streaming: Showing generated AI text as it arrives rather than waiting for the
+    entire answer to finish.
+
+17. REFERENCES FOR COLOR VISION INFORMATION
+--------------------------------------------
+National Eye Institute (NEI), “Types of Color Vision Deficiency”:
+https://www.nei.nih.gov/eye-health-information/eye-conditions-and-diseases/color-blindness/types-color-vision-deficiency
+
+National Eye Institute (NEI), “Testing for Color Vision Deficiency”:
+https://www.nei.nih.gov/eye-health-information/eye-conditions-and-diseases/color-blindness/testing-color-vision-deficiency
+
+National Eye Institute (NEI), “Causes of Color Vision Deficiency”:
+https://www.nei.nih.gov/eye-health-information/eye-conditions-and-diseases/color-blindness/causes-color-vision-deficiency
+
+Project repository:
+https://github.com/gitwithsunil/colorcare
+
+END OF GUIDE
